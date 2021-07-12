@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
+typedef Future<dynamic> MessageHandler(Map<String, dynamic>? message);
 
 class FlutterSiriActivity {
   const FlutterSiriActivity(this.title, this.key,
@@ -12,10 +12,10 @@ class FlutterSiriActivity {
 
   final String title;
   final String key;
-  final String contentDescription;
+  final String? contentDescription;
   final bool isEligibleForSearch;
   final bool isEligibleForPrediction;
-  final String suggestedInvocationPhrase;
+  final String? suggestedInvocationPhrase;
 }
 
 class FlutterSiriSuggestions {
@@ -32,12 +32,12 @@ class FlutterSiriSuggestions {
   //     : assert(title != null),
   //       super();
 
-  MessageHandler _onLaunch;
+  MessageHandler? _onLaunch;
 
   static const MethodChannel _channel = const MethodChannel('flutter_siri_suggestions');
 
-  Future<String> buildActivity(FlutterSiriActivity activity) async {
-    return await _channel.invokeMethod('becomeCurrent', <String, Object>{
+  Future<String?> buildActivity(FlutterSiriActivity activity) async {
+    return await _channel.invokeMethod('becomeCurrent', <String, Object?>{
       'title': activity.title,
       'key': activity.key,
       'contentDescription': activity.contentDescription,
@@ -47,7 +47,7 @@ class FlutterSiriSuggestions {
     });
   }
 
-  void configure({MessageHandler onLaunch}) {
+  void configure({MessageHandler? onLaunch}) {
     _onLaunch = onLaunch;
     _channel.setMethodCallHandler(_handleMethod);
   }
@@ -55,7 +55,7 @@ class FlutterSiriSuggestions {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onLaunch":
-        return _onLaunch(call.arguments.cast<String, dynamic>());
+        return _onLaunch!(call.arguments.cast<String, dynamic>());
       default:
         throw UnsupportedError("Unrecognized JSON message");
     }
